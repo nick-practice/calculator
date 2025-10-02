@@ -5,27 +5,75 @@
 <title>分割計算スマホ対応</title>
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <style>
-body { font-family: "Meiryo", "ＭＳ Ｐゴシック", sans-serif; padding: 10px; background: #f8f8f8; }
-h3 { margin-top: 0; margin-bottom: 8px; font-size:1.2em; }
-table { border-collapse: collapse; font-size:1em; width: 100%; }
-th, td { border: 1px solid #888; padding: 8px 6px; }
-th { background:#cceeff; }
+body {
+    /* ページ全体のパディングをさらに小さく */
+    font-family: "Meiryo", "ＭＳ Ｐゴシック", sans-serif;
+    padding: 4px;
+    background: #f8f8f8;
+}
+h3 {
+    /* h3の上下の余白を最小に */
+    margin-top: 2px;
+    margin-bottom: 2px;
+    font-size: 1.2em;
+}
+table { border-collapse: collapse; font-size: 1em; width: 100%; }
+th, td { border: 1px solid #888; padding: 6px 4px; /* テーブルセル内のパディングも少し調整 */ }
+th { background: #cceeff; }
 td.label, .high-label { text-align: left; }
-td.value { text-align: right; min-width:70px; }
+td.value { text-align: right; min-width: 70px; }
+/* 修正: コントロール要素を大きくする */
 button, select, input[type="number"] {
-    font-size:1em; padding: 10px; margin: 0 2px 8px 0;
-    border-radius: 5px; border: 1px solid #aaa;
+    font-size: 1.1em; /* フォントサイズを大きく */
+    padding: 12px; /* パディングを大きく */
+    margin: 0 4px 6px 0; /* 下マージンを少し調整 */
+    border-radius: 5px;
+    border: 1px solid #aaa;
+    box-sizing: border-box; /* パディングを含めたサイズ計算に */
 }
 input[type="checkbox"] { width: 20px; height: 20px; }
-label { display: block; margin-bottom: 8px; font-size:1em; }
-#controls { width: 100%; margin-bottom: 12px; background: #fff; border-radius: 6px; box-shadow: 0 2px 6px #ddd; padding: 10px; box-sizing: border-box;}
-#result { margin-top: 14px; background: #fff; border-radius: 6px; box-shadow: 0 2px 6px #eee;}
-.product-box { width: 100%; margin: 0 0 12px 0; background: #fff; border-radius: 6px; box-shadow: 0 2px 6px #eee; padding: 10px; box-sizing: border-box;}
+label {
+    display: block;
+    margin-bottom: 4px;
+    font-size: 1em;
+}
+/* 修正: input[type="number"]の横幅を適切に設定 */
+input[type="number"] {
+    width: 100px; /* 分割回数が見やすい幅 */
+    text-align: right;
+}
+#controls {
+    /* コントロールボックスの上下マージンとパディングを調整 */
+    width: 100%;
+    margin-bottom: 6px;
+    background: #fff;
+    border-radius: 6px;
+    box-shadow: 0 2px 6px #ddd;
+    padding: 8px;
+    box-sizing: border-box;
+}
+#result {
+    /* 結果ボックスの上のマージンを調整 */
+    margin-top: 8px;
+    background: #fff;
+    border-radius: 6px;
+    box-shadow: 0 2px 6px #eee;
+}
+.product-box {
+    /* 商品ボックスの上下マージンとパディングを調整 */
+    width: 100%;
+    margin: 0 0 8px 0; /* 商品ボックス間のマージンを調整 */
+    background: #fff;
+    border-radius: 6px;
+    box-shadow: 0 2px 6px #eee;
+    padding: 6px; /* 商品ボックス内のパディングを詰める */
+    box-sizing: border-box;
+}
 #textTable { width: 100%; }
 
 @media (min-width: 900px) {
-    #textTable { display: flex; flex-wrap: wrap; justify-content: space-between; }
-    .product-box { width: 32%; }
+    #textTable { display: flex; flex-wrap: wrap; justify-content: space-between; }
+    .product-box { width: 32%; margin: 0 0 12px 0; }
 }
 .high-label { width: 38vw; min-width: 80px; }
 .high-checkbox { text-align: center; width: 11vw; }
