@@ -12,24 +12,28 @@ body {
     background: #f8f8f8;
 }
 h3 {
-    /* h3の上下の余白を最小に */
+    /* h3の上下の余白を最小に（最小値2pxを維持） */
     margin-top: 2px;
     margin-bottom: 2px;
     font-size: 1.2em;
 }
 table { border-collapse: collapse; font-size: 1em; width: 100%; }
-th, td { border: 1px solid #888; padding: 6px 4px; /* テーブルセル内のパディングも少し調整 */ }
+th, td {
+    /* テーブルセル内のパディングを小さくして、見出しと表の間隔を詰める */
+    border: 1px solid #888;
+    padding: 4px; /* 6px 4px から 4px に縮小 */
+}
 th { background: #cceeff; }
 td.label, .high-label { text-align: left; }
 td.value { text-align: right; min-width: 70px; }
-/* 修正: コントロール要素を大きくする */
+/* コントロール要素のスタイル（前回調整済み） */
 button, select, input[type="number"] {
-    font-size: 1.1em; /* フォントサイズを大きく */
-    padding: 12px; /* パディングを大きく */
-    margin: 0 4px 6px 0; /* 下マージンを少し調整 */
+    font-size: 1.1em;
+    padding: 12px;
+    margin: 0 4px 6px 0;
     border-radius: 5px;
     border: 1px solid #aaa;
-    box-sizing: border-box; /* パディングを含めたサイズ計算に */
+    box-sizing: border-box;
 }
 input[type="checkbox"] { width: 20px; height: 20px; }
 label {
@@ -37,13 +41,12 @@ label {
     margin-bottom: 4px;
     font-size: 1em;
 }
-/* 修正: input[type="number"]の横幅を適切に設定 */
 input[type="number"] {
-    width: 100px; /* 分割回数が見やすい幅 */
+    width: 100px;
     text-align: right;
 }
 #controls {
-    /* コントロールボックスの上下マージンとパディングを調整 */
+    /* コントロールボックスのパディングを維持 */
     width: 100%;
     margin-bottom: 6px;
     background: #fff;
@@ -53,20 +56,19 @@ input[type="number"] {
     box-sizing: border-box;
 }
 #result {
-    /* 結果ボックスの上のマージンを調整 */
     margin-top: 8px;
     background: #fff;
     border-radius: 6px;
     box-shadow: 0 2px 6px #eee;
 }
 .product-box {
-    /* 商品ボックスの上下マージンとパディングを調整 */
+    /* 商品ボックスの上下パディングをさらに最小化 */
     width: 100%;
-    margin: 0 0 8px 0; /* 商品ボックス間のマージンを調整 */
+    margin: 0 0 8px 0;
     background: #fff;
     border-radius: 6px;
     box-shadow: 0 2px 6px #eee;
-    padding: 6px; /* 商品ボックス内のパディングを詰める */
+    padding: 4px; /* 6px から 4px に縮小 */
     box-sizing: border-box;
 }
 #textTable { width: 100%; }
@@ -209,7 +211,7 @@ input[type="number"] {
 </div>
 
 <script type="text/javascript">
-// --- ここに元のJS（変更なし）を貼り付けてOK ---
+// JavaScriptコードは変更なし
 /* ユーティリティ */
 function formatInt(n){
     n = Math.floor(Number(n) || 0);
