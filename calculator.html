@@ -35,6 +35,11 @@ th, td {
 th { background: #cceeff; }
 td.label, .high-label { text-align: left; }
 td.value { text-align: right; min-width: 70px; }
+/* 追加: チェックボックスをセル内で中央揃えにする */
+td input[type="checkbox"] {
+    margin: auto;
+    display: block;
+}
 /* コントロール要素のスタイル（前回調整済み） */
 button, select, input[type="number"] {
     font-size: 1.1em;
@@ -86,6 +91,7 @@ input[type="number"] {
     #textTable { display: flex; flex-wrap: wrap; justify-content: space-between; }
     .product-box { width: 32%; margin: 0 0 12px 0; }
 }
+/* high-checkboxにtext-align: center;が設定されていることを確認 */
 .high-label { width: 38vw; min-width: 80px; }
 .high-checkbox { text-align: center; width: 11vw; }
 /* 横スクロール対応 */
@@ -440,12 +446,30 @@ function resetChecks(){
         span.textContent = "[+]";
     });
 }
+
+// 追加: 分割回数入力欄に数字のみ許可するイベントリスナー
+document.addEventListener('DOMContentLoaded', function() {
+    var installInput = document.getElementById('install');
+
+    // キー入力時の処理
+    installInput.addEventListener('keypress', function(e) {
+        // 数字(0-9)以外のキー入力を禁止する
+        if (e.key.match(/[^0-9]/)) {
+            e.preventDefault();
+        }
+    });
+
+    // 貼り付け時の処理 (数字以外を削除)
+    installInput.addEventListener('paste', function(e) {
+        var paste = (e.clipboardData || window.clipboardData).getData('text');
+        var cleanPaste = paste.replace(/[^0-9]/g, '');
+        if (cleanPaste !== paste) {
+            e.preventDefault();
+            // クリーンな値に置き換える
+            document.execCommand('insertText', false, cleanPaste);
+        }
+    });
+});
 </script>
 </body>
 </html>
-
-
-
-
-
-
