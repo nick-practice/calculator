@@ -37,7 +37,7 @@ td input[type="checkbox"] {
     display: block;
 }
 td.discount-value {
-    color: red;
+    color: red !important;
 }
 button, select, input[type="number"] {
     font-size: 1.1em;
@@ -556,7 +556,7 @@ function calculate(){
     var html = "<table>";
     // ポイントを割引額の上に表示
     html += "<tr><td class='label'>合計ポイント</td><td class='value'>" + totalPoints.toFixed(2) + "P</td></tr>";
-    html += "<tr><td class='label'>値引額</td><td class='value'>- " + formatInt(discount) + "円</td></tr>";
+    html += "<tr><td class='label'>値引額</td><td class='value discount-value'>- " + formatInt(discount) + "円</td></tr>";
     html += "<tr><td class='label'>①現金価格合計（税込）</td><td class='value'>" + formatInt(cashPrice) + "円</td></tr>";
     if(install !== 1){
         html += "<tr><td class='label'>②申込金（頭金）</td><td class='value'>" + formatInt(deposit) + "円</td></tr>";
@@ -650,6 +650,7 @@ document.addEventListener('DOMContentLoaded', function() {
 </script>
 </body>
 </html>
+
 
 
 
