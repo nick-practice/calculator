@@ -35,7 +35,7 @@ th, td {
 th { background: #cceeff; }
 td.label, .high-label { text-align: left; }
 td.value { text-align: right; min-width: 70px; }
-/* 追加: チェックボックスをセル内で中央揃えにする */
+/* チェックボックスをセル内で中央揃えにする */
 td input[type="checkbox"] {
     margin: auto;
     display: block;
@@ -100,6 +100,10 @@ input[type="number"] {
 .collapsed {
     display: none;
 }
+/* イレギュラー入力欄を非表示にするためのCSS */
+.hidden {
+    display: none;
+}
 </style>
 </head>
 <body>
@@ -118,6 +122,16 @@ input[type="number"] {
 <label>分割回数：
 <input type="number" id="install" value="" min="1" max="36">
 </label>
+
+<label style="display: flex; align-items: center; margin-bottom: 8px;">
+    <input type="checkbox" id="irregularCheck" onchange="toggleIrregularInput()" style="margin-right: 8px;">
+    イレギュラー計算を行う
+</label>
+<div id="irregularBonusContainer" class="hidden">
+    <label>ボーナス月加算分割支払金（任意）：
+        <input type="number" id="bonusPerInput" value="" min="0" placeholder="1回あたりの金額を入力">
+    </label>
+</div>
 <button onclick="calculate()">計算</button>
 <button onclick="resetChecks()">リセット</button>
 <div id="result"></div>
@@ -278,9 +292,26 @@ function getDiscount(total, install){
     return 0;
 }
 
-/* 主処理 (変更なし) */
+/**
+ * 新しい機能: イレギュラー計算の入力欄の表示/非表示を切り替える
+ */
+function toggleIrregularInput() {
+    var check = document.getElementById('irregularCheck').checked;
+    var container = document.getElementById('irregularBonusContainer');
+    if (check) {
+        container.classList.remove('hidden');
+    } else {
+        container.classList.add('hidden');
+        // チェックを外したら、入力値をクリアして意図しない計算を防ぐ
+        document.getElementById('bonusPerInput').value = "";
+    }
+}
+
+
+/* 主処理 */
 function calculate(){
     var totalText = 0;
+    // 小学生パワーアップゼミ
     for(var g=1; g<=6; g++){
         if(isChecked("eng"+g)) totalText += PRICE.eng;
         if(isChecked("math"+g)) totalText += PRICE.math;
@@ -290,6 +321,7 @@ function calculate(){
             if(isChecked("soc"+g)) totalText += PRICE.soc;
         }
     }
+    // マイジュック
     for(var g=1; g<=6; g++){
         if(isChecked("my_eng"+g)) totalText += PRICE.my;
         if(isChecked("my_math"+g)) totalText += PRICE.my;
@@ -299,6 +331,7 @@ function calculate(){
             if(isChecked("my_soc"+g)) totalText += PRICE.my;
         }
     }
+    // 中学生パワーアップゼミ
     for(var g=1; g<=3; g++){
         if(isChecked("jun_eng"+g)) totalText += PRICE.eng;
         if(isChecked("jun_math"+g)) totalText += PRICE.math;
@@ -306,6 +339,7 @@ function calculate(){
         if(isChecked("jun_sci"+g)) totalText += PRICE.sci;
         if(isChecked("jun_soc"+g)) totalText += PRICE.soc;
     }
+    // 中学生パワーアップゼミ（ライト版）
     for(var g=1; g<=3; g++){
         if(isChecked("light_eng"+g)) totalText += PRICE.light_eng;
         if(isChecked("light_math"+g)) totalText += PRICE.light_math;
@@ -313,6 +347,8 @@ function calculate(){
         if(isChecked("light_sci"+g)) totalText += PRICE.light_sci;
         if(isChecked("light_soc"+g)) totalText += PRICE.light_soc;
     }
+    
+    // サマー練成・ウィンター練成 (ボーナス元本)
     var summerTotal = 0;
     for(var g=1; g<=6; g++){
         var cnt = 0;
@@ -328,6 +364,8 @@ function calculate(){
         }
     }
     totalText += summerTotal;
+    
+    // 中学生Focus (ボーナス元本)
     var focusTotal = 0;
     for(var g=1; g<=3; g++){
         var cnt = 0;
@@ -341,6 +379,8 @@ function calculate(){
         }
     }
     totalText += focusTotal;
+    
+    // 高校SPIRAL・現役合格システム
     var highIds = [
         "high_eng1","high_eng2","high_math1","high_mathA","high_math2","high_mathB","high_math3","high_mathC",
         "high_jpMod","high_jpModEx","high_jpModExam","high_jpCla","high_jpClaEx","high_jpClaExam","high_jpChi","high_jpChiEx","high_jpChiExam",
@@ -349,9 +389,11 @@ function calculate(){
     for(var i=0;i<highIds.length;i++){
         if(isChecked(highIds[i])) totalText += PRICE.high;
     }
+
+    // 分割計算に必要な値を取得
     var installInput = document.getElementById("install");
     var install = parseInt(installInput.value, 10) || 0;
-    if(install <= 0) { // 分割回数が空欄/0の場合はエラーメッセージ
+    if(install <= 0) { 
         document.getElementById("result").innerHTML = "<p style='color:red; text-align:center; padding:10px;'>⚠ 分割回数を入力してください ⚠</p>";
         return;
     }
@@ -364,28 +406,63 @@ function calculate(){
     var fee = Math.floor(balance * addon * install);
     var installmentTotal = balance + fee;
     var totalPayment = installmentTotal;
-    var bonusBase = summerTotal + focusTotal;
+    
+    
+    // ----------------------------------------------------------------------
+    // ↓↓ ボーナス・分割金額の計算ロジック (イレギュラー対応済み) ↓↓
+    
+    // 1. ボーナス回数を決定（分割回数で自動決定）
     var bonusTimes = 0;
     if(install === 1){ bonusTimes = 0; }
     else if(install >= 12 && install < 24){ bonusTimes = 2; }
     else if(install >= 24 && install < 36){ bonusTimes = 4; }
     else if(install === 36){ bonusTimes = 6; }
     else { bonusTimes = 0; }
-    var bonusPer = 0;
-    var bonusSum = 0;
-    if(bonusTimes > 0 && bonusBase > 0){
-        bonusPer = Math.floor(bonusBase / bonusTimes);
+    
+    // 2. ユーザー入力値（イレギュラー金額）を取得
+    var isIrregular = document.getElementById('irregularCheck').checked;
+    var inputBonusPer = parseInt(document.getElementById("bonusPerInput").value, 10) || 0;
+    
+    var bonusPer = 0; // 1回あたりのボーナス額（最終決定値）
+    var bonusSum = 0; // ボーナス支払金合計
+
+    // ボーナス回数が設定されており、かつボーナス元本がある、またはイレギュラー入力がある場合
+    if (bonusTimes > 0 && ((summerTotal + focusTotal) > 0 || isIrregular)) {
+        if (isIrregular && inputBonusPer > 0) {
+            // イレギュラー計算にチェックがあり、金額が入力されている場合はそれを優先
+            bonusPer = inputBonusPer;
+        } else if ((summerTotal + focusTotal) > 0) {
+            // 通常のボーナス元本（サマー/フォーカス）がある場合、自動計算
+            var bonusBase = summerTotal + focusTotal;
+            bonusPer = Math.floor(bonusBase / bonusTimes);
+        }
+        
         bonusSum = bonusPer * bonusTimes;
+        
+        // 念のため、ボーナス合計が総支払額を超えないように調整
+        if (bonusSum > totalPayment) {
+            bonusSum = totalPayment;
+            bonusPer = Math.floor(bonusSum / bonusTimes); // 再度1回あたり金額を調整
+        }
     }
+    
+    // 3. 分割回数払いの基となる金額を計算
     var baseForInstall = totalPayment - bonusSum;
     if(baseForInstall < 0) baseForInstall = 0;
+    
+    // 4. 2回目以降の月々の金額を計算 (100円未満切り捨てを適用)
     var afterSecond = 0;
     if(install > 0){
-        var raw = Math.floor( (baseForInstall / install) / 100 ) * 100;
-        afterSecond = isNaN(raw) ? 0 : raw;
+        var rawPerInstall = Math.floor( (baseForInstall / install) / 100 ) * 100;
+        afterSecond = isNaN(rawPerInstall) ? 0 : rawPerInstall;
     }
+    
+    // 5. 第1回目支払金額を計算 (残額すべてを第1回目に加算)
     var firstPayment = totalPayment - bonusSum - (afterSecond * Math.max(0, install - 1));
     if(firstPayment < 0) firstPayment = 0;
+
+    // ↑↑ ボーナス・分割金額の計算ロジック (イレギュラー対応済み) ↑↑
+    // ----------------------------------------------------------------------
     
     // 計算結果の表示
     var html = "<table>";
@@ -400,7 +477,11 @@ function calculate(){
         html += "<tr><td colspan='2' style='text-align:center;'>--- 分割内訳 (" + install + "回払い) ---</td></tr>";
         html += "<tr><td class='label'>第1回目分割支払金</td><td class='value'>" + formatInt(firstPayment) + "円</td></tr>";
         html += "<tr><td class='label'>2回目以降分割支払金×" + Math.max(0, install - 1) + "回</td><td class='value'>" + formatInt(afterSecond) + "円</td></tr>";
-        html += "<tr><td class='label'>ボーナス月加算分割支払金×" + bonusTimes + "回</td><td class='value'>" + formatInt(bonusPer) + "円</td></tr>";
+        
+        // ボーナス支払いがある場合のみ表示
+        if (bonusSum > 0) {
+            html += "<tr><td class='label'>ボーナス月加算分割支払金×" + bonusTimes + "回</td><td class='value'>" + formatInt(bonusPer) + "円</td></tr>";
+        }
     }
     html += "</table>";
     document.getElementById("result").innerHTML = html;
@@ -430,6 +511,11 @@ function resetChecks(){
     }
     // 分割回数のリセット
     document.getElementById("install").value = "";
+    
+    // イレギュラー入力もリセット
+    document.getElementById('irregularCheck').checked = false;
+    document.getElementById('irregularBonusContainer').classList.add('hidden');
+    document.getElementById('bonusPerInput').value = "";
     
     // 結果エリアのリセット
     document.getElementById("result").innerHTML = "";
@@ -469,6 +555,9 @@ document.addEventListener('DOMContentLoaded', function() {
             document.execCommand('insertText', false, cleanPaste);
         }
     });
+    
+    // 初期状態でイレギュラー入力を隠す
+    document.getElementById('irregularBonusContainer').classList.add('hidden');
 });
 </script>
 </body>
