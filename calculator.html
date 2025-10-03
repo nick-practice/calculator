@@ -393,8 +393,8 @@ function calculate(){
         html += "<tr><td class='label'><strong>⑥お支払総額</strong></td><td class='value'>" + formatInt(totalPayment) + "円</td></tr>";
         html += "<tr><td colspan='2' style='text-align:center;'>--- 分割内訳 (" + install + "回払い) ---</td></tr>";
         html += "<tr><td class='label'>初回分割支払金</td><td class='value'>" + formatInt(firstPayment) + "円</td></tr>";
-        html += "<tr><td class='label'>2回目以降×" + Math.max(0, install - 1) + "回</td><td class='value'>" + formatInt(afterSecond) + "円</td></tr>";
-        html += "<tr><td class='label'>ボーナス加算分（1回あたり）</td><td class='value'>" + formatInt(bonusPer) + "円 × " + bonusTimes + "回</td></tr>";
+        html += "<tr><td class='label'>2回目以降分割支払金×" + Math.max(0, install - 1) + "回</td><td class='value'>" + formatInt(afterSecond) + "円</td></tr>";
+        html += "<tr><td class='label'>ボーナス月加算分割支払金×" + bonusTimes + "回</td><td class='value'>" + formatInt(bonusPer) + "円</td></tr>";
     }
     html += "</table>";
     document.getElementById("result").innerHTML = html;
@@ -443,5 +443,6 @@ function resetChecks(){
 </script>
 </body>
 </html>
+
 
 
