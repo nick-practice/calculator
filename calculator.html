@@ -388,11 +388,11 @@ function calculate(){
     if(install !== 1){
         html += "<tr><td class='label'>②申込金（頭金）</td><td class='value'>" + formatInt(deposit) + "円</td></tr>";
         html += "<tr><td class='label'>③残金（①-②）</td><td class='value'>" + formatInt(balance) + "円</td></tr>";
-        html += "<tr><td class='label'>④分割手数料</td><td class='value'>" + formatInt(fee) + "円</td></tr>";
+        html += "<tr><td class='label'>④分割払手数料</td><td class='value'>" + formatInt(fee) + "円</td></tr>";
         html += "<tr><td class='label'>⑤分割支払金合計（③+④）</td><td class='value'>" + formatInt(installmentTotal) + "円</td></tr>";
-        html += "<tr><td class='label'><strong>⑥お支払総額</strong></td><td class='value'>" + formatInt(totalPayment) + "円</td></tr>";
+        html += "<tr><td class='label'>⑥お支払い総額（②+⑤）</td><td class='value'>" + formatInt(totalPayment) + "円</td></tr>";
         html += "<tr><td colspan='2' style='text-align:center;'>--- 分割内訳 (" + install + "回払い) ---</td></tr>";
-        html += "<tr><td class='label'>初回分割支払金</td><td class='value'>" + formatInt(firstPayment) + "円</td></tr>";
+        html += "<tr><td class='label'>第1回目分割支払金</td><td class='value'>" + formatInt(firstPayment) + "円</td></tr>";
         html += "<tr><td class='label'>2回目以降分割支払金×" + Math.max(0, install - 1) + "回</td><td class='value'>" + formatInt(afterSecond) + "円</td></tr>";
         html += "<tr><td class='label'>ボーナス月加算分割支払金×" + bonusTimes + "回</td><td class='value'>" + formatInt(bonusPer) + "円</td></tr>";
     }
@@ -443,6 +443,7 @@ function resetChecks(){
 </script>
 </body>
 </html>
+
 
 
 
