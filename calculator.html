@@ -552,8 +552,8 @@ function calculate(){
     // 計算結果の表示
     var html = "<table>";
     // ポイントを割引額の上に表示
-    html += "<tr><td class='label'>**合計ポイント**</td><td class='value' style='font-weight:bold;'>" + totalPoints.toFixed(2) + "P</td></tr>";
-    html += "<tr><td class='label'>割引額</td><td class='value'>- " + formatInt(discount) + "円</td></tr>";
+    html += "<tr><td class='label'>合計ポイント</td><td class='value' style='font-weight:bold;'>" + totalPoints.toFixed(2) + "P</td></tr>";
+    html += "<tr><td class='label'>値引額</td><td class='value'>- " + formatInt(discount) + "円</td></tr>";
     html += "<tr><td class='label'>①現金価格合計（税込）</td><td class='value'>" + formatInt(cashPrice) + "円</td></tr>";
     if(install !== 1){
         html += "<tr><td class='label'>②申込金（頭金）</td><td class='value'>" + formatInt(deposit) + "円</td></tr>";
@@ -647,3 +647,4 @@ document.addEventListener('DOMContentLoaded', function() {
 </script>
 </body>
 </html>
+
