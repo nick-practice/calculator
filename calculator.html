@@ -384,7 +384,7 @@ function calculate(){
     // 計算結果の表示
     var html = "<table>";
     html += "<tr><td class='label'>割引額</td><td class='value'>- " + formatInt(discount) + "円</td></tr>";
-    html += "<tr><td class='label'><strong>①現金価格合計（税込）</strong></td><td class='value'>" + formatInt(cashPrice) + "円</td></tr>";
+    html += "<tr><td class='label'>①現金価格合計（税込）</td><td class='value'>" + formatInt(cashPrice) + "円</td></tr>";
     if(install !== 1){
         html += "<tr><td class='label'>②申込金（頭金）</td><td class='value'>" + formatInt(deposit) + "円</td></tr>";
         html += "<tr><td class='label'>③残金（①-②）</td><td class='value'>" + formatInt(balance) + "円</td></tr>";
@@ -443,6 +443,7 @@ function resetChecks(){
 </script>
 </body>
 </html>
+
 
 
 
