@@ -16,6 +16,15 @@ h3 {
     margin-top: 2px;
     margin-bottom: 2px;
     font-size: 1.2em;
+    cursor: pointer; /* クリック可能であることを示す */
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+h3 span {
+    font-size: 0.8em;
+    margin-left: 10px;
+    color: #007bff;
 }
 table { border-collapse: collapse; font-size: 1em; width: 100%; }
 th, td {
@@ -81,6 +90,10 @@ input[type="number"] {
 .high-checkbox { text-align: center; width: 11vw; }
 /* 横スクロール対応 */
 .responsive-table { display: block; overflow-x: auto; width: 100%; }
+/* 折りたたみ用のスタイル */
+.collapsed {
+    display: none;
+}
 </style>
 </head>
 <body>
@@ -89,15 +102,15 @@ input[type="number"] {
 <h3>分割計算</h3>
 <label>信販会社：
 <select id="credit">
-    <option value="0.006">DL（0.6%）</option>
-    <option value="0.0065">タイヘイ（0.65%）</option>
-    <option value="0.0058">ニチクレ（0.58%）</option>
-    <option value="0.006">九日（0.6%）</option>
-    <option value="0.006">マスター（0.6%）</option>
+    <option value="0.006">DL（0.6%）</option>
+    <option value="0.0065">タイヘイ（0.65%）</option>
+    <option value="0.0058">ニチクレ（0.58%）</option>
+    <option value="0.006">九日（0.6%）</option>
+    <option value="0.006">マスター（0.6%）</option>
 </select>
 </label>
 <label>分割回数：
-<input type="number" id="install" value="12" min="1" max="36">
+<input type="number" id="install" value="" min="1" max="36">
 </label>
 <button onclick="calculate()">計算</button>
 <button onclick="resetChecks()">リセット</button>
@@ -105,289 +118,327 @@ input[type="number"] {
 </div>
 
 <div id="textTable">
-        <div class="product-box">
-        <h3>小学生パワーアップゼミ</h3>
-        <div class="responsive-table">
-        <table>
-            <tr><th></th><th>小1</th><th>小2</th><th>小3</th><th>小4</th><th>小5</th><th>小6</th></tr>
-            <tr><td>英語</td><td><input type="checkbox" id="eng1"></td><td><input type="checkbox" id="eng2"></td><td><input type="checkbox" id="eng3"></td><td><input type="checkbox" id="eng4"></td><td><input type="checkbox" id="eng5"></td><td><input type="checkbox" id="eng6"></td></tr>
-            <tr><td>算数</td><td><input type="checkbox" id="math1"></td><td><input type="checkbox" id="math2"></td><td><input type="checkbox" id="math3"></td><td><input type="checkbox" id="math4"></td><td><input type="checkbox" id="math5"></td><td><input type="checkbox" id="math6"></td></tr>
-            <tr><td>国語</td><td><input type="checkbox" id="jp1"></td><td><input type="checkbox" id="jp2"></td><td><input type="checkbox" id="jp3"></td><td><input type="checkbox" id="jp4"></td><td><input type="checkbox" id="jp5"></td><td><input type="checkbox" id="jp6"></td></tr>
-            <tr><td>理科</td><td>-</td><td>-</td><td>-</td><td>-</td><td><input type="checkbox" id="sci5"></td><td><input type="checkbox" id="sci6"></td></tr>
-            <tr><td>社会</td><td>-</td><td>-</td><td>-</td><td>-</td><td><input type="checkbox" id="soc5"></td><td><input type="checkbox" id="soc6"></td></tr>
-        </table>
-        </div>
-    </div>
+    <div class="product-box">
+        <h3 onclick="toggleTable('table1')">小学生パワーアップゼミ <span id="toggle_icon_table1">[+]</span></h3>
+        <div id="table1" class="responsive-table collapsed">
+        <table>
+            <tr><th></th><th>小1</th><th>小2</th><th>小3</th><th>小4</th><th>小5</th><th>小6</th></tr>
+            <tr><td>英語</td><td><input type="checkbox" id="eng1"></td><td><input type="checkbox" id="eng2"></td><td><input type="checkbox" id="eng3"></td><td><input type="checkbox" id="eng4"></td><td><input type="checkbox" id="eng5"></td><td><input type="checkbox" id="eng6"></td></tr>
+            <tr><td>算数</td><td><input type="checkbox" id="math1"></td><td><input type="checkbox" id="math2"></td><td><input type="checkbox" id="math3"></td><td><input type="checkbox" id="math4"></td><td><input type="checkbox" id="math5"></td><td><input type="checkbox" id="math6"></td></tr>
+            <tr><td>国語</td><td><input type="checkbox" id="jp1"></td><td><input type="checkbox" id="jp2"></td><td><input type="checkbox" id="jp3"></td><td><input type="checkbox" id="jp4"></td><td><input type="checkbox" id="jp5"></td><td><input type="checkbox" id="jp6"></td></tr>
+            <tr><td>理科</td><td>-</td><td>-</td><td>-</td><td>-</td><td><input type="checkbox" id="sci5"></td><td><input type="checkbox" id="sci6"></td></tr>
+            <tr><td>社会</td><td>-</td><td>-</td><td>-</td><td>-</td><td><input type="checkbox" id="soc5"></td><td><input type="checkbox" id="soc6"></td></tr>
+        </table>
+        </div>
+    </div>
 
-        <div class="product-box">
-        <h3>サマー練成・ウィンター練成</h3>
-        <div class="responsive-table">
-        <table>
-            <tr><th></th><th>小1</th><th>小2</th><th>小3</th><th>小4</th><th>小5</th><th>小6</th></tr>
-            <tr><td>英語</td><td><input type="checkbox" id="summer_eng1"></td><td><input type="checkbox" id="summer_eng2"></td><td><input type="checkbox" id="summer_eng3"></td><td><input type="checkbox" id="summer_eng4"></td><td><input type="checkbox" id="summer_eng5"></td><td><input type="checkbox" id="summer_eng6"></td></tr>
-            <tr><td>算数</td><td><input type="checkbox" id="summer_math1"></td><td><input type="checkbox" id="summer_math2"></td><td><input type="checkbox" id="summer_math3"></td><td><input type="checkbox" id="summer_math4"></td><td><input type="checkbox" id="summer_math5"></td><td><input type="checkbox" id="summer_math6"></td></tr>
-            <tr><td>国語</td><td><input type="checkbox" id="summer_jp1"></td><td><input type="checkbox" id="summer_jp2"></td><td><input type="checkbox" id="summer_jp3"></td><td><input type="checkbox" id="summer_jp4"></td><td><input type="checkbox" id="summer_jp5"></td><td><input type="checkbox" id="summer_jp6"></td></tr>
-            <tr><td>理科</td><td>-</td><td>-</td><td>-</td><td><input type="checkbox" id="summer_sci4"></td><td><input type="checkbox" id="summer_sci5"></td><td><input type="checkbox" id="summer_sci6"></td></tr>
-            <tr><td>社会</td><td>-</td><td>-</td><td>-</td><td><input type="checkbox" id="summer_soc4"></td><td><input type="checkbox" id="summer_soc5"></td><td><input type="checkbox" id="summer_soc6"></td></tr>
-        </table>
-        </div>
-    </div>
+    <div class="product-box">
+        <h3 onclick="toggleTable('table2')">サマー練成・ウィンター練成 <span id="toggle_icon_table2">[+]</span></h3>
+        <div id="table2" class="responsive-table collapsed">
+        <table>
+            <tr><th></th><th>小1</th><th>小2</th><th>小3</th><th>小4</th><th>小5</th><th>小6</th></tr>
+            <tr><td>英語</td><td><input type="checkbox" id="summer_eng1"></td><td><input type="checkbox" id="summer_eng2"></td><td><input type="checkbox" id="summer_eng3"></td><td><input type="checkbox" id="summer_eng4"></td><td><input type="checkbox" id="summer_eng5"></td><td><input type="checkbox" id="summer_eng6"></td></tr>
+            <tr><td>算数</td><td><input type="checkbox" id="summer_math1"></td><td><input type="checkbox" id="summer_math2"></td><td><input type="checkbox" id="summer_math3"></td><td><input type="checkbox" id="summer_math4"></td><td><input type="checkbox" id="summer_math5"></td><td><input type="checkbox" id="summer_math6"></td></tr>
+            <tr><td>国語</td><td><input type="checkbox" id="summer_jp1"></td><td><input type="checkbox" id="summer_jp2"></td><td><input type="checkbox" id="summer_jp3"></td><td><input type="checkbox" id="summer_jp4"></td><td><input type="checkbox" id="summer_jp5"></td><td><input type="checkbox" id="summer_jp6"></td></tr>
+            <tr><td>理科</td><td>-</td><td>-</td><td>-</td><td><input type="checkbox" id="summer_sci4"></td><td><input type="checkbox" id="summer_sci5"></td><td><input type="checkbox" id="summer_sci6"></td></tr>
+            <tr><td>社会</td><td>-</td><td>-</td><td>-</td><td><input type="checkbox" id="summer_soc4"></td><td><input type="checkbox" id="summer_soc5"></td><td><input type="checkbox" id="summer_soc6"></td></tr>
+        </table>
+        </div>
+    </div>
 
-        <div class="product-box">
-        <h3>マイジュック</h3>
-        <div class="responsive-table">
-        <table>
-            <tr><th></th><th>小1</th><th>小2</th><th>小3</th><th>小4</th><th>小5</th><th>小6</th></tr>
-            <tr><td>英語</td><td><input type="checkbox" id="my_eng1"></td><td><input type="checkbox" id="my_eng2"></td><td><input type="checkbox" id="my_eng3"></td><td><input type="checkbox" id="my_eng4"></td><td><input type="checkbox" id="my_eng5"></td><td><input type="checkbox" id="my_eng6"></td></tr>
-            <tr><td>算数</td><td><input type="checkbox" id="my_math1"></td><td><input type="checkbox" id="my_math2"></td><td><input type="checkbox" id="my_math3"></td><td><input type="checkbox" id="my_math4"></td><td><input type="checkbox" id="my_math5"></td><td><input type="checkbox" id="my_math6"></td></tr>
-            <tr><td>国語</td><td><input type="checkbox" id="my_jp1"></td><td><input type="checkbox" id="my_jp2"></td><td><input type="checkbox" id="my_jp3"></td><td><input type="checkbox" id="my_jp4"></td><td><input type="checkbox" id="my_jp5"></td><td><input type="checkbox" id="my_jp6"></td></tr>
-            <tr><td>理科</td><td>-</td><td>-</td><td>-</td><td><input type="checkbox" id="my_sci4"></td><td><input type="checkbox" id="my_sci5"></td><td><input type="checkbox" id="my_sci6"></td></tr>
-            <tr><td>社会</td><td>-</td><td>-</td><td>-</td><td><input type="checkbox" id="my_soc4"></td><td><input type="checkbox" id="my_soc5"></td><td><input type="checkbox" id="my_soc6"></td></tr>
-        </table>
-        </div>
-    </div>
+    <div class="product-box">
+        <h3 onclick="toggleTable('table3')">マイジュック <span id="toggle_icon_table3">[+]</span></h3>
+        <div id="table3" class="responsive-table collapsed">
+        <table>
+            <tr><th></th><th>小1</th><th>小2</th><th>小3</th><th>小4</th><th>小5</th><th>小6</th></tr>
+            <tr><td>英語</td><td><input type="checkbox" id="my_eng1"></td><td><input type="checkbox" id="my_eng2"></td><td><input type="checkbox" id="my_eng3"></td><td><input type="checkbox" id="my_eng4"></td><td><input type="checkbox" id="my_eng5"></td><td><input type="checkbox" id="my_eng6"></td></tr>
+            <tr><td>算数</td><td><input type="checkbox" id="my_math1"></td><td><input type="checkbox" id="my_math2"></td><td><input type="checkbox" id="my_math3"></td><td><input type="checkbox" id="my_math4"></td><td><input type="checkbox" id="my_math5"></td><td><input type="checkbox" id="my_math6"></td></tr>
+            <tr><td>国語</td><td><input type="checkbox" id="my_jp1"></td><td><input type="checkbox" id="my_jp2"></td><td><input type="checkbox" id="my_jp3"></td><td><input type="checkbox" id="my_jp4"></td><td><input type="checkbox" id="my_jp5"></td><td><input type="checkbox" id="my_jp6"></td></tr>
+            <tr><td>理科</td><td>-</td><td>-</td><td>-</td><td><input type="checkbox" id="my_sci4"></td><td><input type="checkbox" id="my_sci5"></td><td><input type="checkbox" id="my_sci6"></td></tr>
+            <tr><td>社会</td><td>-</td><td>-</td><td>-</td><td><input type="checkbox" id="my_soc4"></td><td><input type="checkbox" id="my_soc5"></td><td><input type="checkbox" id="my_soc6"></td></tr>
+        </table>
+        </div>
+    </div>
 
-        <div class="product-box">
-        <h3>中学生パワーアップゼミ</h3>
-        <div class="responsive-table">
-        <table>
-            <tr><th></th><th>中1</th><th>中2</th><th>中3</th></tr>
-            <tr><td>英語</td><td><input type="checkbox" id="jun_eng1"></td><td><input type="checkbox" id="jun_eng2"></td><td><input type="checkbox" id="jun_eng3"></td></tr>
-            <tr><td>数学</td><td><input type="checkbox" id="jun_math1"></td><td><input type="checkbox" id="jun_math2"></td><td><input type="checkbox" id="jun_math3"></td></tr>
-            <tr><td>国語</td><td><input type="checkbox" id="jun_jp1"></td><td><input type="checkbox" id="jun_jp2"></td><td><input type="checkbox" id="jun_jp3"></td></tr>
-            <tr><td>理科</td><td><input type="checkbox" id="jun_sci1"></td><td><input type="checkbox" id="jun_sci2"></td><td><input type="checkbox" id="jun_sci3"></td></tr>
-            <tr><td>社会</td><td><input type="checkbox" id="jun_soc1"></td><td><input type="checkbox" id="jun_soc2"></td><td><input type="checkbox" id="jun_soc3"></td></tr>
-        </table>
-        </div>
-    </div>
+    <div class="product-box">
+        <h3 onclick="toggleTable('table4')">中学生パワーアップゼミ <span id="toggle_icon_table4">[+]</span></h3>
+        <div id="table4" class="responsive-table collapsed">
+        <table>
+            <tr><th></th><th>中1</th><th>中2</th><th>中3</th></tr>
+            <tr><td>英語</td><td><input type="checkbox" id="jun_eng1"></td><td><input type="checkbox" id="jun_eng2"></td><td><input type="checkbox" id="jun_eng3"></td></tr>
+            <tr><td>数学</td><td><input type="checkbox" id="jun_math1"></td><td><input type="checkbox" id="jun_math2"></td><td><input type="checkbox" id="jun_math3"></td></tr>
+            <tr><td>国語</td><td><input type="checkbox" id="jun_jp1"></td><td><input type="checkbox" id="jun_jp2"></td><td><input type="checkbox" id="jun_jp3"></td></tr>
+            <tr><td>理科</td><td><input type="checkbox" id="jun_sci1"></td><td><input type="checkbox" id="jun_sci2"></td><td><input type="checkbox" id="jun_sci3"></td></tr>
+            <tr><td>社会</td><td><input type="checkbox" id="jun_soc1"></td><td><input type="checkbox" id="jun_soc2"></td><td><input type="checkbox" id="jun_soc3"></td></tr>
+        </table>
+        </div>
+    </div>
 
-        <div class="product-box">
-        <h3>中学生Focus（中学まとめ）</h3>
-        <div class="responsive-table">
-        <table>
-            <tr><th></th><th>中1</th><th>中2</th><th>中3</th></tr>
-            <tr><td>英語</td><td><input type="checkbox" id="focus_eng1"></td><td><input type="checkbox" id="focus_eng2"></td><td><input type="checkbox" id="focus_eng3"></td></tr>
-            <tr><td>数学</td><td><input type="checkbox" id="focus_math1"></td><td><input type="checkbox" id="focus_math2"></td><td><input type="checkbox" id="focus_math3"></td></tr>
-            <tr><td>国語</td><td><input type="checkbox" id="focus_jp1"></td><td><input type="checkbox" id="focus_jp2"></td><td><input type="checkbox" id="focus_jp3"></td></tr>
-            <tr><td>理科</td><td><input type="checkbox" id="focus_sci1"></td><td><input type="checkbox" id="focus_sci2"></td><td><input type="checkbox" id="focus_sci3"></td></tr>
-            <tr><td>社会</td><td><input type="checkbox" id="focus_soc1"></td><td><input type="checkbox" id="focus_soc2"></td><td><input type="checkbox" id="focus_soc3"></td></tr>
-        </table>
-        </div>
-    </div>
+    <div class="product-box">
+        <h3 onclick="toggleTable('table5')">中学生Focus（中学まとめ） <span id="toggle_icon_table5">[+]</span></h3>
+        <div id="table5" class="responsive-table collapsed">
+        <table>
+            <tr><th></th><th>中1</th><th>中2</th><th>中3</th></tr>
+            <tr><td>英語</td><td><input type="checkbox" id="focus_eng1"></td><td><input type="checkbox" id="focus_eng2"></td><td><input type="checkbox" id="focus_eng3"></td></tr>
+            <tr><td>数学</td><td><input type="checkbox" id="focus_math1"></td><td><input type="checkbox" id="focus_math2"></td><td><input type="checkbox" id="focus_math3"></td></tr>
+            <tr><td>国語</td><td><input type="checkbox" id="focus_jp1"></td><td><input type="checkbox" id="focus_jp2"></td><td><input type="checkbox" id="focus_jp3"></td></tr>
+            <tr><td>理科</td><td><input type="checkbox" id="focus_sci1"></td><td><input type="checkbox" id="focus_sci2"></td><td><input type="checkbox" id="focus_sci3"></td></tr>
+            <tr><td>社会</td><td><input type="checkbox" id="focus_soc1"></td><td><input type="checkbox" id="focus_soc2"></td><td><input type="checkbox" id="focus_soc3"></td></tr>
+        </table>
+        </div>
+    </div>
 
-        <div class="product-box">
-        <h3>中学生パワーアップゼミ（ライト版）</h3>
-        <div class="responsive-table">
-        <table>
-            <tr><th></th><th>中1</th><th>中2</th><th>中3</th></tr>
-            <tr><td>英語</td><td><input type="checkbox" id="light_eng1"></td><td><input type="checkbox" id="light_eng2"></td><td><input type="checkbox" id="light_eng3"></td></tr>
-            <tr><td>数学</td><td><input type="checkbox" id="light_math1"></td><td><input type="checkbox" id="light_math2"></td><td><input type="checkbox" id="light_math3"></td></tr>
-            <tr><td>国語</td><td><input type="checkbox" id="light_jp1"></td><td><input type="checkbox" id="light_jp2"></td><td><input type="checkbox" id="light_jp3"></td></tr>
-            <tr><td>理科</td><td><input type="checkbox" id="light_sci1"></td><td><input type="checkbox" id="light_sci2"></td><td><input type="checkbox" id="light_sci3"></td></tr>
-            <tr><td>社会</td><td><input type="checkbox" id="light_soc1"></td><td><input type="checkbox" id="light_soc2"></td><td><input type="checkbox" id="light_soc3"></td></tr>
-        </table>
-        </div>
-    </div>
+    <div class="product-box">
+        <h3 onclick="toggleTable('table6')">中学生パワーアップゼミ（ライト版） <span id="toggle_icon_table6">[+]</span></h3>
+        <div id="table6" class="responsive-table collapsed">
+        <table>
+            <tr><th></th><th>中1</th><th>中2</th><th>中3</th></tr>
+            <tr><td>英語</td><td><input type="checkbox" id="light_eng1"></td><td><input type="checkbox" id="light_eng2"></td><td><input type="checkbox" id="light_eng3"></td></tr>
+            <tr><td>数学</td><td><input type="checkbox" id="light_math1"></td><td><input type="checkbox" id="light_math2"></td><td><input type="checkbox" id="light_math3"></td></tr>
+            <tr><td>国語</td><td><input type="checkbox" id="light_jp1"></td><td><input type="checkbox" id="light_jp2"></td><td><input type="checkbox" id="light_jp3"></td></tr>
+            <tr><td>理科</td><td><input type="checkbox" id="light_sci1"></td><td><input type="checkbox" id="light_sci2"></td><td><input type="checkbox" id="light_sci3"></td></tr>
+            <tr><td>社会</td><td><input type="checkbox" id="light_soc1"></td><td><input type="checkbox" id="light_soc2"></td><td><input type="checkbox" id="light_soc3"></td></tr>
+        </table>
+        </div>
+    </div>
 
-        <div class="product-box">
-        <h3>高校SPIRAL・現役合格システム</h3>
-        <div class="responsive-table">
-        <table>
-            <tr><td class="high-label">英語Ⅰ</td><td class="high-checkbox"><input type="checkbox" id="high_eng1"></td><td class="high-label">英語Ⅱ</td><td class="high-checkbox"><input type="checkbox" id="high_eng2"></td></tr>
-            <tr><td class="high-label">数学Ⅰ</td><td class="high-checkbox"><input type="checkbox" id="high_math1"></td><td class="high-label">数学A</td><td class="high-checkbox"><input type="checkbox" id="high_mathA"></td></tr>
-            <tr><td class="high-label">数学Ⅱ</td><td class="high-checkbox"><input type="checkbox" id="high_math2"></td><td class="high-label">数学B</td><td class="high-checkbox"><input type="checkbox" id="high_mathB"></td></tr>
-            <tr><td class="high-label">数学Ⅲ</td><td class="high-checkbox"><input type="checkbox" id="high_math3"></td><td class="high-label">数学C</td><td class="high-checkbox"><input type="checkbox" id="high_mathC"></td></tr>
-            <tr><td class="high-label">現代文</td><td class="high-checkbox"><input type="checkbox" id="high_jpMod"></td><td class="high-label">現代文演習</td><td class="high-checkbox"><input type="checkbox" id="high_jpModEx"></td></tr>
-            <tr><td class="high-label">入試現代文演習</td><td class="high-checkbox"><input type="checkbox" id="high_jpModExam"></td><td class="high-label">古文</td><td class="high-checkbox"><input type="checkbox" id="high_jpCla"></td></tr>
-            <tr><td class="high-label">古文演習</td><td class="high-checkbox"><input type="checkbox" id="high_jpClaEx"></td><td class="high-label">入試古文演習</td><td class="high-checkbox"><input type="checkbox" id="high_jpClaExam"></td></tr>
-            <tr><td class="high-label">漢文</td><td class="high-checkbox"><input type="checkbox" id="high_jpChi"></td><td class="high-label">漢文演習</td><td class="high-checkbox"><input type="checkbox" id="high_jpChiEx"></td></tr>
-            <tr><td class="high-label">入試漢文演習</td><td class="high-checkbox"><input type="checkbox" id="high_jpChiExam"></td><td class="high-label">物理基礎</td><td class="high-checkbox"><input type="checkbox" id="high_sciPhy"></td></tr>
-            <tr><td class="high-label">生物基礎</td><td class="high-checkbox"><input type="checkbox" id="high_sciBio"></td><td class="high-label">化学基礎</td><td class="high-checkbox"><input type="checkbox" id="high_sciChem"></td></tr>
-            <tr><td class="high-label">地理総合</td><td class="high-checkbox"><input type="checkbox" id="high_socGeo"></td><td class="high-label">歴史総合</td><td class="high-checkbox"><input type="checkbox" id="high_socHist"></td></tr>
-        </table>
-        </div>
-    </div>
+    <div class="product-box">
+        <h3 onclick="toggleTable('table7')">高校SPIRAL・現役合格システム <span id="toggle_icon_table7">[+]</span></h3>
+        <div id="table7" class="responsive-table collapsed">
+        <table>
+            <tr><td class="high-label">英語Ⅰ</td><td class="high-checkbox"><input type="checkbox" id="high_eng1"></td><td class="high-label">英語Ⅱ</td><td class="high-checkbox"><input type="checkbox" id="high_eng2"></td></tr>
+            <tr><td class="high-label">数学Ⅰ</td><td class="high-checkbox"><input type="checkbox" id="high_math1"></td><td class="high-label">数学A</td><td class="high-checkbox"><input type="checkbox" id="high_mathA"></td></tr>
+            <tr><td class="high-label">数学Ⅱ</td><td class="high-checkbox"><input type="checkbox" id="high_math2"></td><td class="high-label">数学B</td><td class="high-checkbox"><input type="checkbox" id="high_mathB"></td></tr>
+            <tr><td class="high-label">数学Ⅲ</td><td class="high-checkbox"><input type="checkbox" id="high_math3"></td><td class="high-label">数学C</td><td class="high-checkbox"><input type="checkbox" id="high_mathC"></td></tr>
+            <tr><td class="high-label">現代文</td><td class="high-checkbox"><input type="checkbox" id="high_jpMod"></td><td class="high-label">現代文演習</td><td class="high-checkbox"><input type="checkbox" id="high_jpModEx"></td></tr>
+            <tr><td class="high-label">入試現代文演習</td><td class="high-checkbox"><input type="checkbox" id="high_jpModExam"></td><td class="high-label">古文</td><td class="high-checkbox"><input type="checkbox" id="high_jpCla"></td></tr>
+            <tr><td class="high-label">古文演習</td><td class="high-checkbox"><input type="checkbox" id="high_jpClaEx"></td><td class="high-label">入試古文演習</td><td class="high-checkbox"><input type="checkbox" id="high_jpClaExam"></td></tr>
+            <tr><td class="high-label">漢文</td><td class="high-checkbox"><input type="checkbox" id="high_jpChi"></td><td class="high-label">漢文演習</td><td class="high-checkbox"><input type="checkbox" id="high_jpChiEx"></td></tr>
+            <tr><td class="high-label">入試漢文演習</td><td class="high-checkbox"><input type="checkbox" id="high_jpChiExam"></td><td class="high-label">物理基礎</td><td class="high-checkbox"><input type="checkbox" id="high_sciPhy"></td></tr>
+            <tr><td class="high-label">生物基礎</td><td class="high-checkbox"><input type="checkbox" id="high_sciBio"></td><td class="high-label">化学基礎</td><td class="high-checkbox"><input type="checkbox" id="high_sciChem"></td></tr>
+            <tr><td class="high-label">地理総合</td><td class="high-checkbox"><input type="checkbox" id="high_socGeo"></td><td class="high-label">歴史総合</td><td class="high-checkbox"><input type="checkbox" id="high_socHist"></td></tr>
+        </table>
+        </div>
+    </div>
 
 </div>
 
 <script type="text/javascript">
-// JavaScriptコードは変更なし
 /* ユーティリティ */
 function formatInt(n){
-    n = Math.floor(Number(n) || 0);
-    var s = n.toString();
-    return s.replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+    n = Math.floor(Number(n) || 0);
+    var s = n.toString();
+    return s.replace(/\B(?=(\d{3})+(?!\d))/g, ",");
 }
 function isChecked(id){
-    var el = document.getElementById(id);
-    return el ? el.checked : false;
+    var el = document.getElementById(id);
+    return el ? el.checked : false;
 }
 
-/* 価格定義 */
+/* 価格定義 (変更なし) */
 var PRICE = {
-    eng:39600, math:39600, jp:39600, sci:26400, soc:26400,
-    summerMap: {2:30000,3:44000,5:66000},
-    focusMap: {2:30000,3:44000,5:66000},
-    my:39600,
-    light_eng:19800, light_math:19800, light_jp:19800, light_sci:13200, light_soc:13200,
-    high:52800
+    eng:39600, math:39600, jp:39600, sci:26400, soc:26400,
+    summerMap: {2:30000,3:44000,5:66000},
+    focusMap: {2:30000,3:44000,5:66000},
+    my:39600,
+    light_eng:19800, light_math:19800, light_jp:19800, light_sci:13200, light_soc:13200,
+    high:52800
 };
 
-/* 値引きテーブル */
+/* 値引きテーブル (変更なし) */
 var discountTable = [
- {min:200000,max:249999,discount24:7000,discount36:10000},
- {min:250000,max:299999,discount24:15000,discount36:20000},
- {min:300000,max:349999,discount24:21000,discount36:30000},
- {min:350000,max:399999,discount24:28000,discount36:40000},
- {min:400000,max:449999,discount24:32000,discount36:43000},
- {min:450000,max:499999,discount24:35000,discount36:46000},
- {min:500000,max:599999,discount24:40000,discount36:55000},
- {min:600000,max:699999,discount24:50000,discount36:72000},
- {min:700000,max:9999999,discount24:60000,discount36:83000}
+    {min:200000,max:249999,discount24:7000,discount36:10000},
+    {min:250000,max:299999,discount24:15000,discount36:20000},
+    {min:300000,max:349999,discount24:21000,discount36:30000},
+    {min:350000,max:399999,discount24:28000,discount36:40000},
+    {min:400000,max:449999,discount24:32000,discount36:43000},
+    {min:450000,max:499999,discount24:35000,discount36:46000},
+    {min:500000,max:599999,discount24:40000,discount36:55000},
+    {min:600000,max:699999,discount24:50000,discount36:72000},
+    {min:700000,max:9999999,discount24:60000,discount36:83000}
 ];
 
-/* 値引き計算関数 */
+/* 値引き計算関数 (変更なし) */
 function getDiscount(total, install){
-    if(isNaN(total) || total < 200000) return 0;
-    var inst = install;
-    if(inst === 1) inst = 24; // 1回は24回扱い
-    if(inst >= 2 && inst <= 23) return 0;
-    for(var i=0;i<discountTable.length;i++){
-        if(total >= discountTable[i].min && total <= discountTable[i].max){
-            return (inst === 24 ? discountTable[i].discount24 : discountTable[i].discount36);
-        }
-    }
-    return 0;
+    if(isNaN(total) || total < 200000) return 0;
+    var inst = install;
+    if(inst === 1) inst = 24; // 1回は24回扱い
+    if(inst >= 2 && inst <= 23) return 0;
+    for(var i=0;i<discountTable.length;i++){
+        if(total >= discountTable[i].min && total <= discountTable[i].max){
+            return (inst === 24 ? discountTable[i].discount24 : discountTable[i].discount36);
+        }
+    }
+    return 0;
 }
 
-/* 主処理 */
+/* 主処理 (変更なし) */
 function calculate(){
-    var totalText = 0;
-    for(var g=1; g<=6; g++){
-        if(isChecked("eng"+g)) totalText += PRICE.eng;
-        if(isChecked("math"+g)) totalText += PRICE.math;
-        if(isChecked("jp"+g)) totalText += PRICE.jp;
-        if(g>=5){
-            if(isChecked("sci"+g)) totalText += PRICE.sci;
-            if(isChecked("soc"+g)) totalText += PRICE.soc;
-        }
-    }
-    for(var g=1; g<=6; g++){
-        if(isChecked("my_eng"+g)) totalText += PRICE.my;
-        if(isChecked("my_math"+g)) totalText += PRICE.my;
-        if(isChecked("my_jp"+g)) totalText += PRICE.my;
-        if(g>=4){
-            if(isChecked("my_sci"+g)) totalText += PRICE.my;
-            if(isChecked("my_soc"+g)) totalText += PRICE.my;
-        }
-    }
-    for(var g=1; g<=3; g++){
-        if(isChecked("jun_eng"+g)) totalText += PRICE.eng;
-        if(isChecked("jun_math"+g)) totalText += PRICE.math;
-        if(isChecked("jun_jp"+g)) totalText += PRICE.jp;
-        if(isChecked("jun_sci"+g)) totalText += PRICE.sci;
-        if(isChecked("jun_soc"+g)) totalText += PRICE.soc;
-    }
-    for(var g=1; g<=3; g++){
-        if(isChecked("light_eng"+g)) totalText += PRICE.light_eng;
-        if(isChecked("light_math"+g)) totalText += PRICE.light_math;
-        if(isChecked("light_jp"+g)) totalText += PRICE.light_jp;
-        if(isChecked("light_sci"+g)) totalText += PRICE.light_sci;
-        if(isChecked("light_soc"+g)) totalText += PRICE.light_soc;
-    }
-    var summerTotal = 0;
-    for(var g=1; g<=6; g++){
-        var cnt = 0;
-        if(isChecked("summer_eng"+g)) cnt++;
-        if(isChecked("summer_math"+g)) cnt++;
-        if(isChecked("summer_jp"+g)) cnt++;
-        if(g>=4){
-            if(isChecked("summer_sci"+g)) cnt++;
-            if(isChecked("summer_soc"+g)) cnt++;
-        }
-        if(cnt === 2 || cnt === 3 || cnt === 5){
-            summerTotal += PRICE.summerMap[cnt];
-        }
-    }
-    totalText += summerTotal;
-    var focusTotal = 0;
-    for(var g=1; g<=3; g++){
-        var cnt = 0;
-        if(isChecked("focus_eng"+g)) cnt++;
-        if(isChecked("focus_math"+g)) cnt++;
-        if(isChecked("focus_jp"+g)) cnt++;
-        if(isChecked("focus_sci"+g)) cnt++;
-        if(isChecked("focus_soc"+g)) cnt++;
-        if(cnt === 2 || cnt === 3 || cnt === 5){
-            focusTotal += PRICE.focusMap[cnt];
-        }
-    }
-    totalText += focusTotal;
-    var highIds = [
-        "high_eng1","high_eng2","high_math1","high_mathA","high_math2","high_mathB","high_math3","high_mathC",
-        "high_jpMod","high_jpModEx","high_jpModExam","high_jpCla","high_jpClaEx","high_jpClaExam","high_jpChi","high_jpChiEx","high_jpChiExam",
-        "high_sciPhy","high_sciBio","high_sciChem","high_socGeo","high_socHist"
-    ];
-    for(var i=0;i<highIds.length;i++){
-        if(isChecked(highIds[i])) totalText += PRICE.high;
-    }
-    var install = parseInt(document.getElementById("install").value, 10) || 0;
-    var discount = getDiscount(totalText, install);
-    var cashPrice = Math.floor(totalText - discount);
-    var deposit = 0;
-    var balance = cashPrice - deposit;
-    var addon = parseFloat(document.getElementById("credit").value) || 0;
-    var fee = Math.floor(balance * addon * install);
-    var installmentTotal = balance + fee;
-    var totalPayment = installmentTotal;
-    var bonusBase = summerTotal + focusTotal;
-    var bonusTimes = 0;
-    if(install === 1){ bonusTimes = 0; }
-    else if(install >= 12 && install < 24){ bonusTimes = 2; }
-    else if(install >= 24 && install < 36){ bonusTimes = 4; }
-    else if(install === 36){ bonusTimes = 6; }
-    else { bonusTimes = 0; }
-    var bonusPer = 0;
-    var bonusSum = 0;
-    if(bonusTimes > 0 && bonusBase > 0){
-        bonusPer = Math.floor(bonusBase / bonusTimes);
-        bonusSum = bonusPer * bonusTimes;
-    }
-    var baseForInstall = totalPayment - bonusSum;
-    if(baseForInstall < 0) baseForInstall = 0;
-    var afterSecond = 0;
-    if(install > 0){
-        var raw = Math.floor( (baseForInstall / install) / 100 ) * 100;
-        afterSecond = isNaN(raw) ? 0 : raw;
-    }
-    var firstPayment = totalPayment - bonusSum - (afterSecond * Math.max(0, install - 1));
-    if(firstPayment < 0) firstPayment = 0;
-    var html = "<table>";
-    html += "<tr><td class='label'>割引額</td><td class='value'>- " + formatInt(discount) + "円</td></tr>";
-    html += "<tr><td class='label'>①現金価格合計（税込）</td><td class='value'>" + formatInt(cashPrice) + "円</td></tr>";
-    if(install !== 1){
-        html += "<tr><td class='label'>②申込金（頭金）</td><td class='value'>" + formatInt(deposit) + "円</td></tr>";
-        html += "<tr><td class='label'>③残金（①-②）</td><td class='value'>" + formatInt(balance) + "円</td></tr>";
-        html += "<tr><td class='label'>④分割手数料</td><td class='value'>" + formatInt(fee) + "円</td></tr>";
-        html += "<tr><td class='label'>⑤分割支払金合計（③+④）</td><td class='value'>" + formatInt(installmentTotal) + "円</td></tr>";
-        html += "<tr><td class='label'>⑥お支払総額</td><td class='value'>" + formatInt(totalPayment) + "円</td></tr>";
-        html += "<tr><td colspan='2' style='text-align:center;'>--- 分割内訳 (" + install + "回払い) ---</td></tr>";
-        html += "<tr><td class='label'>初回分割支払金</td><td class='value'>" + formatInt(firstPayment) + "円</td></tr>";
-        html += "<tr><td class='label'>2回目以降×" + Math.max(0, install - 1) + "回</td><td class='value'>" + formatInt(afterSecond) + "円</td></tr>";
-        html += "<tr><td class='label'>ボーナス加算分（1回あたり）</td><td class='value'>" + formatInt(bonusPer) + "円 × " + bonusTimes + "回</td></tr>";
-    }
-    document.getElementById("result").innerHTML = html;
+    var totalText = 0;
+    for(var g=1; g<=6; g++){
+        if(isChecked("eng"+g)) totalText += PRICE.eng;
+        if(isChecked("math"+g)) totalText += PRICE.math;
+        if(isChecked("jp"+g)) totalText += PRICE.jp;
+        if(g>=5){
+            if(isChecked("sci"+g)) totalText += PRICE.sci;
+            if(isChecked("soc"+g)) totalText += PRICE.soc;
+        }
+    }
+    for(var g=1; g<=6; g++){
+        if(isChecked("my_eng"+g)) totalText += PRICE.my;
+        if(isChecked("my_math"+g)) totalText += PRICE.my;
+        if(isChecked("my_jp"+g)) totalText += PRICE.my;
+        if(g>=4){
+            if(isChecked("my_sci"+g)) totalText += PRICE.my;
+            if(isChecked("my_soc"+g)) totalText += PRICE.my;
+        }
+    }
+    for(var g=1; g<=3; g++){
+        if(isChecked("jun_eng"+g)) totalText += PRICE.eng;
+        if(isChecked("jun_math"+g)) totalText += PRICE.math;
+        if(isChecked("jun_jp"+g)) totalText += PRICE.jp;
+        if(isChecked("jun_sci"+g)) totalText += PRICE.sci;
+        if(isChecked("jun_soc"+g)) totalText += PRICE.soc;
+    }
+    for(var g=1; g<=3; g++){
+        if(isChecked("light_eng"+g)) totalText += PRICE.light_eng;
+        if(isChecked("light_math"+g)) totalText += PRICE.light_math;
+        if(isChecked("light_jp"+g)) totalText += PRICE.light_jp;
+        if(isChecked("light_sci"+g)) totalText += PRICE.light_sci;
+        if(isChecked("light_soc"+g)) totalText += PRICE.light_soc;
+    }
+    var summerTotal = 0;
+    for(var g=1; g<=6; g++){
+        var cnt = 0;
+        if(isChecked("summer_eng"+g)) cnt++;
+        if(isChecked("summer_math"+g)) cnt++;
+        if(isChecked("summer_jp"+g)) cnt++;
+        if(g>=4){
+            if(isChecked("summer_sci"+g)) cnt++;
+            if(isChecked("summer_soc"+g)) cnt++;
+        }
+        if(cnt === 2 || cnt === 3 || cnt === 5){
+            summerTotal += PRICE.summerMap[cnt];
+        }
+    }
+    totalText += summerTotal;
+    var focusTotal = 0;
+    for(var g=1; g<=3; g++){
+        var cnt = 0;
+        if(isChecked("focus_eng"+g)) cnt++;
+        if(isChecked("focus_math"+g)) cnt++;
+        if(isChecked("focus_jp"+g)) cnt++;
+        if(isChecked("focus_sci"+g)) cnt++;
+        if(isChecked("focus_soc"+g)) cnt++;
+        if(cnt === 2 || cnt === 3 || cnt === 5){
+            focusTotal += PRICE.focusMap[cnt];
+        }
+    }
+    totalText += focusTotal;
+    var highIds = [
+        "high_eng1","high_eng2","high_math1","high_mathA","high_math2","high_mathB","high_math3","high_mathC",
+        "high_jpMod","high_jpModEx","high_jpModExam","high_jpCla","high_jpClaEx","high_jpClaExam","high_jpChi","high_jpChiEx","high_jpChiExam",
+        "high_sciPhy","high_sciBio","high_sciChem","high_socGeo","high_socHist"
+    ];
+    for(var i=0;i<highIds.length;i++){
+        if(isChecked(highIds[i])) totalText += PRICE.high;
+    }
+    var installInput = document.getElementById("install");
+    var install = parseInt(installInput.value, 10) || 0;
+    if(install <= 0) { // 分割回数が空欄/0の場合はエラーメッセージ
+        document.getElementById("result").innerHTML = "<p style='color:red; text-align:center; padding:10px;'>⚠ 分割回数を入力してください ⚠</p>";
+        return;
+    }
+
+    var discount = getDiscount(totalText, install);
+    var cashPrice = Math.floor(totalText - discount);
+    var deposit = 0;
+    var balance = cashPrice - deposit;
+    var addon = parseFloat(document.getElementById("credit").value) || 0;
+    var fee = Math.floor(balance * addon * install);
+    var installmentTotal = balance + fee;
+    var totalPayment = installmentTotal;
+    var bonusBase = summerTotal + focusTotal;
+    var bonusTimes = 0;
+    if(install === 1){ bonusTimes = 0; }
+    else if(install >= 12 && install < 24){ bonusTimes = 2; }
+    else if(install >= 24 && install < 36){ bonusTimes = 4; }
+    else if(install === 36){ bonusTimes = 6; }
+    else { bonusTimes = 0; }
+    var bonusPer = 0;
+    var bonusSum = 0;
+    if(bonusTimes > 0 && bonusBase > 0){
+        bonusPer = Math.floor(bonusBase / bonusTimes);
+        bonusSum = bonusPer * bonusTimes;
+    }
+    var baseForInstall = totalPayment - bonusSum;
+    if(baseForInstall < 0) baseForInstall = 0;
+    var afterSecond = 0;
+    if(install > 0){
+        var raw = Math.floor( (baseForInstall / install) / 100 ) * 100;
+        afterSecond = isNaN(raw) ? 0 : raw;
+    }
+    var firstPayment = totalPayment - bonusSum - (afterSecond * Math.max(0, install - 1));
+    if(firstPayment < 0) firstPayment = 0;
+    
+    // 計算結果の表示
+    var html = "<table>";
+    html += "<tr><td class='label'>割引額</td><td class='value'>- " + formatInt(discount) + "円</td></tr>";
+    html += "<tr><td class='label'>**①現金価格合計（税込）**</td><td class='value'>**" + formatInt(cashPrice) + "円**</td></tr>";
+    if(install !== 1){
+        html += "<tr><td class='label'>②申込金（頭金）</td><td class='value'>" + formatInt(deposit) + "円</td></tr>";
+        html += "<tr><td class='label'>③残金（①-②）</td><td class='value'>" + formatInt(balance) + "円</td></tr>";
+        html += "<tr><td class='label'>④分割手数料</td><td class='value'>" + formatInt(fee) + "円</td></tr>";
+        html += "<tr><td class='label'>⑤分割支払金合計（③+④）</td><td class='value'>" + formatInt(installmentTotal) + "円</td></tr>";
+        html += "<tr><td class='label'>**⑥お支払総額**</td><td class='value'>**" + formatInt(totalPayment) + "円**</td></tr>";
+        html += "<tr><td colspan='2' style='text-align:center;'>--- 分割内訳 (" + install + "回払い) ---</td></tr>";
+        html += "<tr><td class='label'>初回分割支払金</td><td class='value'>" + formatInt(firstPayment) + "円</td></tr>";
+        html += "<tr><td class='label'>2回目以降×" + Math.max(0, install - 1) + "回</td><td class='value'>" + formatInt(afterSecond) + "円</td></tr>";
+        html += "<tr><td class='label'>ボーナス加算分（1回あたり）</td><td class='value'>" + formatInt(bonusPer) + "円 × " + bonusTimes + "回</td></tr>";
+    }
+    html += "</table>";
+    document.getElementById("result").innerHTML = html;
+}
+
+/* 折りたたみ機能 */
+function toggleTable(id) {
+    var tableDiv = document.getElementById(id);
+    var iconSpan = document.getElementById('toggle_icon_' + id);
+    if (tableDiv.classList.contains('collapsed')) {
+        tableDiv.classList.remove('collapsed');
+        iconSpan.textContent = "[-]";
+    } else {
+        tableDiv.classList.add('collapsed');
+        iconSpan.textContent = "[+]";
+    }
 }
 
 /* リセット */
 function resetChecks(){
-    var inputs = document.getElementsByTagName("input");
-    for(var i=0;i<inputs.length;i++){
-        if(inputs[i].type && inputs[i].type.toLowerCase() === "checkbox"){
-            inputs[i].checked = false;
-        }
-    }
-    document.getElementById("result").innerHTML = "";
+    // チェックボックスのリセット
+    var inputs = document.getElementsByTagName("input");
+    for(var i=0;i<inputs.length;i++){
+        if(inputs[i].type && inputs[i].type.toLowerCase() === "checkbox"){
+            inputs[i].checked = false;
+        }
+    }
+    // 分割回数のリセット
+    document.getElementById("install").value = "";
+    
+    // 結果エリアのリセット
+    document.getElementById("result").innerHTML = "";
+
+    // テーブルの折りたたみ状態もリセット（全て折りたたむ）
+    var tableDivs = document.querySelectorAll('.responsive-table');
+    var iconSpans = document.querySelectorAll('[id^="toggle_icon_"]');
+
+    tableDivs.forEach(function(div) {
+        div.classList.add('collapsed');
+    });
+
+    iconSpans.forEach(function(span) {
+        span.textContent = "[+]";
+    });
 }
 </script>
 </body>
