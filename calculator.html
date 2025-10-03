@@ -2,21 +2,19 @@
 <html lang="ja">
 <head>
 <meta charset="UTF-8">
-<title>分割計算スマホ対応</title>
+<title>分割計算（全機能搭載版）</title>
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <style>
 body {
-    /* ページ全体のパディングをさらに小さく */
     font-family: "Meiryo", "ＭＳ Ｐゴシック", sans-serif;
     padding: 4px;
     background: #f8f8f8;
 }
 h3 {
-    /* h3の上下の余白を最小に（最小値2pxを維持） */
     margin-top: 2px;
     margin-bottom: 2px;
     font-size: 1.2em;
-    cursor: pointer; /* クリック可能であることを示す */
+    cursor: pointer;
     display: flex;
     justify-content: space-between;
     align-items: center;
@@ -28,19 +26,16 @@ h3 span {
 }
 table { border-collapse: collapse; font-size: 1em; width: 100%; }
 th, td {
-    /* テーブルセル内のパディングを小さくして、見出しと表の間隔を詰める */
     border: 1px solid #888;
-    padding: 4px; /* 6px 4px から 4px に縮小 */
+    padding: 4px;
 }
 th { background: #cceeff; }
 td.label, .high-label { text-align: left; }
 td.value { text-align: right; min-width: 70px; }
-/* チェックボックスをセル内で中央揃えにする */
 td input[type="checkbox"] {
     margin: auto;
     display: block;
 }
-/* コントロール要素のスタイル（前回調整済み） */
 button, select, input[type="number"] {
     font-size: 1.1em;
     padding: 12px;
@@ -60,7 +55,6 @@ input[type="number"] {
     text-align: right;
 }
 #controls {
-    /* コントロールボックスのパディングを維持 */
     width: 100%;
     margin-bottom: 6px;
     background: #fff;
@@ -76,13 +70,12 @@ input[type="number"] {
     box-shadow: 0 2px 6px #eee;
 }
 .product-box {
-    /* 商品ボックスの上下パディングをさらに最小化 */
     width: 100%;
     margin: 0 0 8px 0;
     background: #fff;
     border-radius: 6px;
     box-shadow: 0 2px 6px #eee;
-    padding: 4px; /* 6px から 4px に縮小 */
+    padding: 4px;
     box-sizing: border-box;
 }
 #textTable { width: 100%; }
@@ -91,16 +84,12 @@ input[type="number"] {
     #textTable { display: flex; flex-wrap: wrap; justify-content: space-between; }
     .product-box { width: 32%; margin: 0 0 12px 0; }
 }
-/* high-checkboxにtext-align: center;が設定されていることを確認 */
 .high-label { width: 38vw; min-width: 80px; }
 .high-checkbox { text-align: center; width: 11vw; }
-/* 横スクロール対応 */
 .responsive-table { display: block; overflow-x: auto; width: 100%; }
-/* 折りたたみ用のスタイル */
 .collapsed {
     display: none;
 }
-/* イレギュラー入力欄を非表示にするためのCSS */
 .hidden {
     display: none;
 }
@@ -125,13 +114,15 @@ input[type="number"] {
 
 <label style="display: flex; align-items: center; margin-bottom: 8px;">
     <input type="checkbox" id="irregularCheck" onchange="toggleIrregularInput()" style="margin-right: 8px;">
-    イレギュラー計算
+    イレギュラー計算を行う
 </label>
+
 <div id="irregularBonusContainer" class="hidden">
     <label>ボーナス月加算分割支払金（任意）：
         <input type="number" id="bonusPerInput" value="" min="0" placeholder="1回あたりの金額を入力">
     </label>
 </div>
+
 <button onclick="calculate()">計算</button>
 <button onclick="resetChecks()">リセット</button>
 <div id="result"></div>
@@ -282,7 +273,7 @@ var discountTable = [
 function getDiscount(total, install){
     if(isNaN(total) || total < 200000) return 0;
     var inst = install;
-    if(inst === 1) inst = 24; // 1回は24回扱い
+    if(inst === 1) inst = 24;
     if(inst >= 2 && inst <= 23) return 0;
     for(var i=0;i<discountTable.length;i++){
         if(total >= discountTable[i].min && total <= discountTable[i].max){
@@ -293,7 +284,7 @@ function getDiscount(total, install){
 }
 
 /**
- * 新しい機能: イレギュラー計算の入力欄の表示/非表示を切り替える
+ * イレギュラー計算の入力欄の表示/非表示を切り替える
  */
 function toggleIrregularInput() {
     var check = document.getElementById('irregularCheck').checked;
@@ -302,15 +293,108 @@ function toggleIrregularInput() {
         container.classList.remove('hidden');
     } else {
         container.classList.add('hidden');
-        // チェックを外したら、入力値をクリアして意図しない計算を防ぐ
-        document.getElementById('bonusPerInput').value = "";
+        document.getElementById('bonusPerInput').value = ""; // 入力値をクリア
     }
+}
+
+
+/**
+ * ポイント合計を計算する (マイジュック理社は1.0Pで修正済み)
+ */
+function calculatePoints(){
+    var totalPoints = 0;
+
+    // 小学生パワーアップゼミ (英算国: 1P, 理社: 0.5P)
+    for(var g=1; g<=6; g++){
+        if(isChecked("eng"+g)) totalPoints += 1;
+        if(isChecked("math"+g)) totalPoints += 1;
+        if(isChecked("jp"+g)) totalPoints += 1;
+        if(g>=5){
+            if(isChecked("sci"+g)) totalPoints += 0.5;
+            if(isChecked("soc"+g)) totalPoints += 0.5;
+        }
+    }
+    
+    // 中学生パワーアップゼミ (英数国: 1P, 理社: 0.5P)
+    for(var g=1; g<=3; g++){
+        if(isChecked("jun_eng"+g)) totalPoints += 1;
+        if(isChecked("jun_math"+g)) totalPoints += 1;
+        if(isChecked("jun_jp"+g)) totalPoints += 1;
+        if(isChecked("jun_sci"+g)) totalPoints += 0.5;
+        if(isChecked("jun_soc"+g)) totalPoints += 0.5;
+    }
+
+    // マイジュック (全科目 1.0P)
+    for(var g=1; g<=6; g++){
+        if(isChecked("my_eng"+g)) totalPoints += 1;
+        if(isChecked("my_math"+g)) totalPoints += 1;
+        if(isChecked("my_jp"+g)) totalPoints += 1;
+        if(g>=4){
+            if(isChecked("my_sci"+g)) totalPoints += 1;
+            if(isChecked("my_soc"+g)) totalPoints += 1;
+        }
+    }
+
+    // 中学生パワーアップゼミ（ライト版） (中学生パワーアップゼミの各半分のポイント)
+    for(var g=1; g<=3; g++){
+        if(isChecked("light_eng"+g)) totalPoints += 0.5; 
+        if(isChecked("light_math"+g)) totalPoints += 0.5;
+        if(isChecked("light_jp"+g)) totalPoints += 0.5;
+        if(isChecked("light_sci"+g)) totalPoints += 0.25; 
+        if(isChecked("light_soc"+g)) totalPoints += 0.25;
+    }
+    
+    // 高校SPIRAL・現役合格システム (各科目: 1.25P)
+    var highIds = [
+        "high_eng1","high_eng2","high_math1","high_mathA","high_math2","high_mathB","high_math3","high_mathC",
+        "high_jpMod","high_jpModEx","high_jpModExam","high_jpCla","high_jpClaEx","high_jpClaExam","high_jpChi","high_jpChiEx","high_jpChiExam",
+        "high_sciPhy","high_sciBio","high_sciChem","high_socGeo","high_socHist"
+    ];
+    for(var i=0;i<highIds.length;i++){
+        if(isChecked(highIds[i])) totalPoints += 1.25;
+    }
+
+    // サマー練成・ウィンター練成、中学生Focus (学年ごとに選択科目数でポイントが変わる)
+    
+    // サマー練成・ウィンター練成
+    for(var g=1; g<=6; g++){
+        var cnt = 0;
+        if(isChecked("summer_eng"+g)) cnt++;
+        if(isChecked("summer_math"+g)) cnt++;
+        if(isChecked("summer_jp"+g)) cnt++;
+        if(g>=4){
+            if(isChecked("summer_sci"+g)) cnt++;
+            if(isChecked("summer_soc"+g)) cnt++;
+        }
+        
+        if (cnt === 2) totalPoints += 0.75; 
+        else if (cnt === 3) totalPoints += 1;    
+        else if (cnt === 5) totalPoints += 1.5;   
+    }
+    
+    // 中学生Focus
+    for(var g=1; g<=3; g++){
+        var cnt = 0;
+        if(isChecked("focus_eng"+g)) cnt++;
+        if(isChecked("focus_math"+g)) cnt++;
+        if(isChecked("focus_jp"+g)) cnt++;
+        if(isChecked("focus_sci"+g)) cnt++;
+        if(isChecked("focus_soc"+g)) cnt++;
+        
+        if (cnt === 2) totalPoints += 0.75; 
+        else if (cnt === 3) totalPoints += 1;    
+        else if (cnt === 5) totalPoints += 1.5;   
+    }
+
+    // 小数点第2位まで保持
+    return Math.round(totalPoints * 100) / 100;
 }
 
 
 /* 主処理 */
 function calculate(){
     var totalText = 0;
+    // (商品価格合計 totalText の計算ロジックは省略 - 変更なし)
     // 小学生パワーアップゼミ
     for(var g=1; g<=6; g++){
         if(isChecked("eng"+g)) totalText += PRICE.eng;
@@ -390,6 +474,9 @@ function calculate(){
         if(isChecked(highIds[i])) totalText += PRICE.high;
     }
 
+    // ポイント計算
+    var totalPoints = calculatePoints();
+
     // 分割計算に必要な値を取得
     var installInput = document.getElementById("install");
     var install = parseInt(installInput.value, 10) || 0;
@@ -409,7 +496,7 @@ function calculate(){
     
     
     // ----------------------------------------------------------------------
-    // ↓↓ ボーナス・分割金額の計算ロジック (イレギュラー対応済み) ↓↓
+    // ボーナス・分割金額の計算ロジック (イレギュラー対応済み)
     
     // 1. ボーナス回数を決定（分割回数で自動決定）
     var bonusTimes = 0;
@@ -423,10 +510,9 @@ function calculate(){
     var isIrregular = document.getElementById('irregularCheck').checked;
     var inputBonusPer = parseInt(document.getElementById("bonusPerInput").value, 10) || 0;
     
-    var bonusPer = 0; // 1回あたりのボーナス額（最終決定値）
-    var bonusSum = 0; // ボーナス支払金合計
+    var bonusPer = 0;
+    var bonusSum = 0;
 
-    // ボーナス回数が設定されており、かつボーナス元本がある、またはイレギュラー入力がある場合
     if (bonusTimes > 0 && ((summerTotal + focusTotal) > 0 || isIrregular)) {
         if (isIrregular && inputBonusPer > 0) {
             // イレギュラー計算にチェックがあり、金額が入力されている場合はそれを優先
@@ -442,7 +528,7 @@ function calculate(){
         // 念のため、ボーナス合計が総支払額を超えないように調整
         if (bonusSum > totalPayment) {
             bonusSum = totalPayment;
-            bonusPer = Math.floor(bonusSum / bonusTimes); // 再度1回あたり金額を調整
+            bonusPer = Math.floor(bonusSum / bonusTimes);
         }
     }
     
@@ -461,11 +547,12 @@ function calculate(){
     var firstPayment = totalPayment - bonusSum - (afterSecond * Math.max(0, install - 1));
     if(firstPayment < 0) firstPayment = 0;
 
-    // ↑↑ ボーナス・分割金額の計算ロジック (イレギュラー対応済み) ↑↑
     // ----------------------------------------------------------------------
     
     // 計算結果の表示
     var html = "<table>";
+    // ポイントを割引額の上に表示
+    html += "<tr><td class='label'>**合計ポイント**</td><td class='value' style='font-weight:bold;'>" + totalPoints.toFixed(2) + "P</td></tr>";
     html += "<tr><td class='label'>割引額</td><td class='value'>- " + formatInt(discount) + "円</td></tr>";
     html += "<tr><td class='label'>①現金価格合計（税込）</td><td class='value'>" + formatInt(cashPrice) + "円</td></tr>";
     if(install !== 1){
@@ -533,25 +620,23 @@ function resetChecks(){
     });
 }
 
-// 追加: 分割回数入力欄に数字のみ許可するイベントリスナー
+// DOMContentLoaded
 document.addEventListener('DOMContentLoaded', function() {
     var installInput = document.getElementById('install');
 
     // キー入力時の処理
     installInput.addEventListener('keypress', function(e) {
-        // 数字(0-9)以外のキー入力を禁止する
         if (e.key.match(/[^0-9]/)) {
             e.preventDefault();
         }
     });
 
-    // 貼り付け時の処理 (数字以外を削除)
+    // 貼り付け時の処理
     installInput.addEventListener('paste', function(e) {
         var paste = (e.clipboardData || window.clipboardData).getData('text');
         var cleanPaste = paste.replace(/[^0-9]/g, '');
         if (cleanPaste !== paste) {
             e.preventDefault();
-            // クリーンな値に置き換える
             document.execCommand('insertText', false, cleanPaste);
         }
     });
@@ -562,4 +647,3 @@ document.addEventListener('DOMContentLoaded', function() {
 </script>
 </body>
 </html>
-
